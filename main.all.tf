@@ -56,7 +56,7 @@ resource "aws_security_group" "instance" {
 resource "aws_autoscaling_group" "simple-asg" {
 
 launch_configuration      = "${aws_launch_configuration.simple.id}"
-availability_zones           = ["ap-northeast-2a","ap-northeast-2b"]
+availability_zones           = "${data.aws_availability_zones.all.names}"
 
 load_balancers	= [ "${aws_elb.simple-elb.name}"]
 health_check_type	= "ELB"
@@ -69,13 +69,11 @@ tag {
    propagate_at_launch = true
 }
 }
-
 data "aws_availability_zones" "all" {}
-
 resource "aws_elb" "simple-elb" {
-   name  		             = "tf-elb"
-   availability_zones           = ["ap-northeast-2a","ap-northeast-2b"]
-   security_groups		= ["${aws_security_group.elb-sg.id}"]
+name  		             = "tf-elb"
+availability_zones           = "${data.aws_availability_zones.all.names}"
+security_groups		= ["${aws_security_group.elb-sg.id}"]
 
            listener {
              lb_port	= 80
